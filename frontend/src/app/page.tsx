@@ -1,9 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Sidebar } from '@/components/Sidebar';
-import { Registry, type FilterKey } from '@/components/Registry';
-import { AttestationLog } from '@/components/AttestationLog';
+import { Rail } from '@/components/Rail';
+import { Constellation, type FilterKey } from '@/components/Constellation';
 import { VouchModal, type ModalMode } from '@/components/VouchModal';
 import { ToastProvider } from '@/components/Toast';
 import { useWallet } from '@/hooks/useWallet';
@@ -11,7 +10,7 @@ import { useContractData } from '@/hooks/useContractData';
 import { useTransaction } from '@/hooks/useTransaction';
 import type { Profile } from '@/lib/contract';
 
-function Dashboard() {
+function Desktop() {
   const wallet = useWallet();
   const data = useContractData();
   const [modalOpen, setModalOpen] = useState(false);
@@ -38,20 +37,16 @@ function Dashboard() {
 
   return (
     <>
-      {/* two-column app shell: persistent sidebar + scrolling registry */}
-      <div className="mx-auto grid max-w-[100rem] grid-cols-1 gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[21rem_1fr] lg:gap-8 lg:py-8 xl:grid-cols-[23rem_1fr]">
-        <Sidebar
-          wallet={wallet}
-          onOpen={openDraft}
-          derived={data.derived}
-          vouchTotal={vouchTotal}
-          loading={data.loading}
-        />
+      {/* futuristic OS surface: a thin vertical rail + a free-form constellation field */}
+      <Rail wallet={wallet} onOpen={openDraft} />
 
-        <main className="min-w-0">
-          <Registry
+      <div className="min-h-screen pl-[84px]">
+        <div className="px-4 py-8 sm:px-8">
+          <Constellation
             profiles={data.profiles}
+            attestations={data.attestations}
             derived={data.derived}
+            vouchTotal={vouchTotal}
             loading={data.loading}
             error={data.error}
             filter={filter}
@@ -60,19 +55,7 @@ function Dashboard() {
             onVouch={openVouch}
             onRetry={() => data.refresh()}
           />
-
-          {!data.loading && !data.error && data.attestations.length > 0 && (
-            <div className="mt-8">
-              <AttestationLog items={data.attestations} />
-            </div>
-          )}
-
-          <p className="mt-8 px-1 font-mono text-[11px] leading-relaxed text-ink-faint">
-            Vouch runs on GenLayer's Bradbury testnet. Every ruling is an AI read of peer evidence
-            that each validator re-runs to consensus, never a background check, never financial
-            advice, and it holds no stake or custody.
-          </p>
-        </main>
+        </div>
       </div>
 
       <VouchModal
@@ -93,7 +76,7 @@ function Dashboard() {
 export default function Page() {
   return (
     <ToastProvider>
-      <Dashboard />
+      <Desktop />
     </ToastProvider>
   );
 }

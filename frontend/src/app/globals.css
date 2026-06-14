@@ -42,12 +42,33 @@ body {
   }
 }
 
+@layer components {
+  /* extruded pill used by the vertical rail */
+  .rail-pill {
+    background: #eef0f4;
+    box-shadow: 6px 6px 13px rgba(180, 187, 204, 0.7), -6px -6px 13px rgba(255, 255, 255, 0.95);
+  }
+  .rail-pill-active {
+    background: #e9ebf1;
+    box-shadow: inset 4px 4px 9px rgba(180, 187, 204, 0.75), inset -4px -4px 9px rgba(255, 255, 255, 0.95);
+  }
+}
+
 @layer utilities {
   .uplabel {
     text-transform: uppercase;
     letter-spacing: 0.18em;
     font-size: 0.68rem;
     font-weight: 700;
+  }
+  /* curved trust paths: a slow flowing dash that freezes under reduced motion */
+  .flow-path {
+    stroke-dasharray: 3 9;
+    animation: flowdash 5.5s linear infinite;
+  }
+  /* gentle float for constellation nodes; reduced-motion override stills it */
+  .node-float {
+    animation: nodefloat 7s ease-in-out infinite;
   }
   .tabular {
     font-variant-numeric: tabular-nums;
@@ -64,6 +85,22 @@ body {
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+  }
+}
+
+@keyframes flowdash {
+  to {
+    stroke-dashoffset: -120;
+  }
+}
+
+@keyframes nodefloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
   }
 }
 
