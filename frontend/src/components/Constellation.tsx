@@ -40,47 +40,7 @@ interface Props {
   connected: boolean;
 }
 
-// Core anchor (percentage of the field), deliberately offset left-of-center.
-const CORE = { x: 39, y: 47 };
-// Fixed satellite anchors at asymmetric corners.
-const SAT = {
-  intro: { x: 17, y: 13 },
-  feed: { x: 83, y: 79 },
-  ports: { x: 15, y: 84 },
-  lattice: { x: 62, y: 90 },
-};
-
-const GOLDEN = 2.39996323; // golden angle in radians
-const WIDTHS = ['w-[15rem]', 'w-[17rem]', 'w-[14.5rem]', 'w-[16rem]', 'w-[18rem]'];
-
-function clamp(v: number, lo: number, hi: number) {
-  return Math.max(lo, Math.min(hi, v));
-}
-
-// phyllotaxis scatter around the core, elliptical and non-grid
-function nodePos(i: number, n: number) {
-  const spread = n <= 6 ? 11 : n <= 12 ? 9 : 7.4;
-  const rad = 16 + spread * Math.sqrt(i + 0.6);
-  const a = i * GOLDEN + 0.7;
-  const x = clamp(CORE.x + Math.cos(a) * rad * 1.22, 8, 90);
-  const y = clamp(CORE.y + Math.sin(a) * rad * 0.96, 11, 92);
-  return { x, y };
-}
-
-// normalized (0..1000) quadratic cord with a soft perpendicular bow
-function cord(x1: number, y1: number, x2: number, y2: number, bow = 0.16) {
-  const ax = x1 * 10;
-  const ay = y1 * 10;
-  const bx = x2 * 10;
-  const by = y2 * 10;
-  const mx = (ax + bx) / 2;
-  const my = (ay + by) / 2;
-  const dx = bx - ax;
-  const dy = by - ay;
-  const cx = mx - dy * bow;
-  const cy = my + dx * bow;
-  return `M ${ax.toFixed(1)} ${ay.toFixed(1)} Q ${cx.toFixed(1)} ${cy.toFixed(1)} ${bx.toFixed(1)} ${by.toFixed(1)}`;
-}
+const WIDTHS = ['w-full'];
 
 export function Constellation({
   profiles,
@@ -103,219 +63,57 @@ export function Constellation({
     return sorted.filter((p) => p.status === 'VOUCHED' && p.ruling === filter);
   }, [sorted, filter]);
 
-  const placed = useMemo(
-    () => filtered.map((p, i) => ({ p, pos: nodePos(i, filtered.length) })),
-    [filtered],
-  );
-
-  const fieldH = Math.max(820, 560 + filtered.length * 62);
-  const showField = !loading && !error && profiles.length > 0 && filtered.length > 0;
+  const hasProfiles = !loading && !error && profiles.length > 0;
 
   return (
-    <div className="relative">
-      {/* ===== large-screen constellation surface ===== */}
-      <div
-        className="relative mx-auto hidden max-w-[110rem] lg:block"
-        style={{ height: `${fieldH}px` }}
-      >
-        {/* trust-cord layer behind everything */}
-        <svg
-          className="pointer-events-none absolute inset-0 h-full w-full"
-          viewBox="0 0 1000 1000"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          {/* satellite cords (faint, static) */}
-          {Object.values(SAT).map((s, i) => (
-            <path
-              key={`sat-${i}`}
-              d={cord(CORE.x, CORE.y, s.x, s.y, 0.1)}
-              fill="none"
-              stroke="rgba(154,161,178,0.45)"
-              strokeWidth={1.5}
-              vectorEffect="non-scaling-stroke"
-            />
-          ))}
-          {/* profile trust-cords (flowing dash) */}
-          {showField &&
-            placed.map(({ p, pos }, i) => (
-              <path
-                key={`cord-${p.id}`}
-                className="flow-path"
-                d={cord(CORE.x, CORE.y, pos.x, pos.y, i % 2 === 0 ? 0.18 : -0.16)}
-                fill="none"
-                stroke="rgba(124,131,255,0.6)"
-                strokeWidth={1.6}
-                vectorEffect="non-scaling-stroke"
-              />
-            ))}
-          {/* core anchor pip */}
-          <circle cx={CORE.x * 10} cy={CORE.y * 10} r={4} fill="#7c83ff" vectorEffect="non-scaling-stroke" />
-        </svg>
-
-        {/* intro slab (top-left) */}
+    <div className="mx-auto max-w-[88rem] pb-12">
+      {/* ===== TOP BAND: intro (left) + assessor core (right) ===== */}
+      <div className="grid items-stretch gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <motion.div
-          initial={{ opacity: 0, y: -12 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="absolute z-20 w-[23rem] -translate-x-1/2 -translate-y-1/2"
-          style={{ left: `${SAT.intro.x}%`, top: `${SAT.intro.y}%` }}
+          className="neu rounded-[1.8rem] p-7 sm:p-9"
         >
-          <div className="neu rounded-[1.8rem] p-6">
-            <span className="neu-sm inline-flex items-center gap-2 rounded-pill px-3 py-1.5 font-mono text-peri-deep">
-              <span className="uplabel">Trust constellation</span>
-            </span>
-            <h1 className="mt-4 font-display text-3xl font-extrabold leading-tight tracking-tight text-ink">
-              Reputation, wired by consensus
-            </h1>
-            <p className="mt-3 font-body text-[14px] leading-relaxed text-ink-soft">
-              Open a profile, let peers attest with real evidence, and watch the assessor rule each
-              claim trusted, mixed, or unverified, every validator re-running it on-chain.
-            </p>
-            <button
-              type="button"
-              onClick={onOpen}
-              className="focus-ring mt-5 flex items-center gap-2 rounded-pill accent-grad px-5 py-3 font-mono text-sm font-bold uppercase tracking-wider text-white shadow-glow transition-transform hover:-translate-y-0.5 active:translate-y-0"
-            >
-              <PenLine size={16} /> Open a profile
-            </button>
-          </div>
-        </motion.div>
-
-        {/* filter lens (top-right, vertical) */}
-        <div
-          className="absolute z-20 -translate-y-1/2"
-          style={{ right: '3%', top: '20%' }}
-        >
-          <FilterLens filter={filter} onFilter={onFilter} derived={derived} />
-        </div>
-
-        {/* assessor core (hub) */}
-        <div
-          id="core"
-          className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
-          style={{ left: `${CORE.x}%`, top: `${CORE.y}%` }}
-        >
-          <AssessorCore derived={derived} vouchTotal={vouchTotal} loading={loading} />
-        </div>
-
-        {/* state slab near the core when there is nothing to scatter */}
-        {!showField && (
-          <div
-            className="absolute z-20 w-[28rem] max-w-[80vw] -translate-x-1/2"
-            style={{ left: '70%', top: '46%', transform: 'translate(-50%, -50%)' }}
-          >
-            {loading ? (
-              <FieldSkeleton />
-            ) : error ? (
-              <FieldError message={error} onRetry={onRetry} />
-            ) : profiles.length === 0 ? (
-              <FieldEmpty onOpen={onOpen} />
-            ) : (
-              <div className="neu rounded-[1.6rem] px-6 py-10 text-center font-body text-ink-soft">
-                No profiles match this lens yet.
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* profile nodes scattered around the core */}
-        {showField &&
-          placed.map(({ p, pos }, i) => (
-            <div
-              key={p.id}
-              className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
-              style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
-            >
-              <ProfileNode
-                profile={p}
-                onVouch={onVouch}
-                widthClass={WIDTHS[i % WIDTHS.length]}
-                floatDelay={(i % 5) * 0.6}
-              />
-            </div>
-          ))}
-
-        {/* signal feed (lower-right) */}
-        {!loading && !error && attestations.length > 0 && (
-          <div
-            id="signal-feed"
-            className="absolute z-20 -translate-x-1/2 -translate-y-1/2"
-            style={{ left: `${SAT.feed.x}%`, top: `${SAT.feed.y}%` }}
-          >
-            <SignalFeed items={attestations} />
-          </div>
-        )}
-
-        {/* system ports (lower-left) */}
-        <div
-          id="system-ports"
-          className="absolute z-20 -translate-x-1/2 -translate-y-1/2"
-          style={{ left: `${SAT.ports.x}%`, top: `${SAT.ports.y}%` }}
-        >
-          <SystemPorts />
-        </div>
-
-        {/* trust lattice: Vouch's signature live legend, wired to the core */}
-        <div
-          id="trust-lattice"
-          className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
-          style={{ left: `${SAT.lattice.x}%`, top: `${SAT.lattice.y}%` }}
-        >
-          <TrustLattice derived={derived} connected={connected} />
-        </div>
-
-        {/* explorer + docs: small separate markers, deliberately apart */}
-        <a
-          href={EXPLORER}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="neu-sm focus-ring absolute flex items-center gap-1.5 rounded-pill px-3.5 py-2 font-mono text-[11px] text-ink-soft transition-colors hover:text-peri-deep"
-          style={{ left: '4%', top: '52%' }}
-        >
-          View on explorer <ExternalLink size={11} />
-        </a>
-        <a
-          href="https://docs.genlayer.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="neu-sm focus-ring absolute flex items-center gap-1.5 rounded-pill px-3.5 py-2 font-mono text-[11px] text-ink-soft transition-colors hover:text-peri-deep"
-          style={{ right: '4%', top: '88%' }}
-        >
-          GenLayer docs <ExternalLink size={11} />
-        </a>
-      </div>
-
-      {/* ===== small-screen reflow: stacked soft column, no cords ===== */}
-      <div className="flex flex-col items-stretch gap-7 px-1 pb-10 lg:hidden">
-        <div className="neu rounded-[1.6rem] p-6">
           <span className="neu-sm inline-flex items-center gap-2 rounded-pill px-3 py-1.5 font-mono text-peri-deep">
             <span className="uplabel">Trust constellation</span>
           </span>
-          <h1 className="mt-4 font-display text-3xl font-extrabold leading-tight tracking-tight text-ink">
+          <h1 className="mt-5 font-display text-[clamp(2rem,3.4vw,3rem)] font-extrabold leading-[1.05] tracking-tight text-ink">
             Reputation, wired by consensus
           </h1>
-          <p className="mt-3 font-body text-[14px] leading-relaxed text-ink-soft">
+          <p className="mt-4 max-w-md font-body text-[15px] leading-relaxed text-ink-soft">
             Open a profile, let peers attest with real evidence, and watch the assessor rule each
             claim trusted, mixed, or unverified, every validator re-running it on-chain.
           </p>
           <button
             type="button"
             onClick={onOpen}
-            className="focus-ring mt-5 flex items-center gap-2 rounded-pill accent-grad px-5 py-3 font-mono text-sm font-bold uppercase tracking-wider text-white shadow-glow transition-transform hover:-translate-y-0.5"
+            className="focus-ring mt-7 flex items-center gap-2 rounded-pill accent-grad px-6 py-3.5 font-mono text-sm font-bold uppercase tracking-wider text-white shadow-glow transition-transform hover:-translate-y-0.5 active:translate-y-0"
           >
             <PenLine size={16} /> Open a profile
           </button>
-        </div>
+        </motion.div>
 
-        <div className="neu flex justify-center rounded-[1.6rem] p-6">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.08 }}
+          className="neu flex items-center justify-center rounded-[1.8rem] p-7"
+        >
           <AssessorCore derived={derived} vouchTotal={vouchTotal} loading={loading} />
-        </div>
+        </motion.div>
+      </div>
 
-        <div className="flex justify-center">
-          <FilterLens filter={filter} onFilter={onFilter} derived={derived} />
-        </div>
+      {/* ===== FILTER LENS ROW ===== */}
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+        <h2 className="font-display text-xl font-extrabold tracking-tight text-ink">
+          The registry
+        </h2>
+        <FilterLens filter={filter} onFilter={onFilter} derived={derived} />
+      </div>
 
+      {/* ===== PROFILE GRID ===== */}
+      <div className="mt-6">
         {loading ? (
           <FieldSkeleton />
         ) : error ? (
@@ -323,52 +121,55 @@ export function Constellation({
         ) : profiles.length === 0 ? (
           <FieldEmpty onOpen={onOpen} />
         ) : filtered.length === 0 ? (
-          <div className="neu rounded-[1.6rem] px-6 py-10 text-center font-body text-ink-soft">
+          <div className="neu rounded-[1.6rem] px-6 py-12 text-center font-body text-ink-soft">
             No profiles match this lens yet.
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-5">
-            {placed.map(({ p }, i) => (
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {filtered.map((p, i) => (
               <ProfileNode
                 key={p.id}
                 profile={p}
                 onVouch={onVouch}
-                widthClass="w-full max-w-md"
-                floatDelay={(i % 5) * 0.6}
+                widthClass={WIDTHS[0]}
+                floatDelay={(i % 5) * 0.4}
               />
             ))}
           </div>
         )}
+      </div>
 
-        {!loading && !error && attestations.length > 0 && (
-          <div className="flex justify-center">
-            <SignalFeed items={attestations} />
+      {/* ===== BOTTOM BAND: signal feed + trust lattice + system ports ===== */}
+      <div className="mt-10 grid gap-6 lg:grid-cols-3">
+        {!loading && !error && attestations.length > 0 ? (
+          <SignalFeed items={attestations} />
+        ) : (
+          <div className="neu rounded-[1.6rem] p-6 font-mono text-[11px] uppercase tracking-wider text-ink-faint">
+            Signal feed idle
           </div>
         )}
-        <div className="flex justify-center">
-          <SystemPorts />
-        </div>
-        <div className="flex justify-center">
-          <TrustLattice derived={derived} connected={connected} />
-        </div>
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <a
-            href={EXPLORER}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="neu-sm focus-ring flex items-center gap-1.5 rounded-pill px-3.5 py-2 font-mono text-[11px] text-ink-soft hover:text-peri-deep"
-          >
-            View on explorer <ExternalLink size={11} />
-          </a>
-          <a
-            href="https://docs.genlayer.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="neu-sm focus-ring flex items-center gap-1.5 rounded-pill px-3.5 py-2 font-mono text-[11px] text-ink-soft hover:text-peri-deep"
-          >
-            GenLayer docs <ExternalLink size={11} />
-          </a>
-        </div>
+        <TrustLattice derived={derived} connected={connected} />
+        <SystemPorts />
+      </div>
+
+      {/* ===== resource markers ===== */}
+      <div className="mt-8 flex flex-wrap items-center gap-3">
+        <a
+          href={EXPLORER}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="neu-sm focus-ring flex items-center gap-1.5 rounded-pill px-3.5 py-2 font-mono text-[11px] text-ink-soft transition-colors hover:text-peri-deep"
+        >
+          View on explorer <ExternalLink size={11} />
+        </a>
+        <a
+          href="https://docs.genlayer.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="neu-sm focus-ring flex items-center gap-1.5 rounded-pill px-3.5 py-2 font-mono text-[11px] text-ink-soft transition-colors hover:text-peri-deep"
+        >
+          GenLayer docs <ExternalLink size={11} />
+        </a>
       </div>
     </div>
   );
