@@ -268,7 +268,7 @@ export function Bento({ onOpen, onVouch, derived, vouchTotal, featured, loading 
               rel="noopener noreferrer"
               className="focus-ring hover:text-peri-deep"
             >
-              Contract {shortAddr(CONTRACT_ADDRESS)}
+              Registry contract {shortAddr(CONTRACT_ADDRESS)}
             </a>
           </div>
         </motion.div>

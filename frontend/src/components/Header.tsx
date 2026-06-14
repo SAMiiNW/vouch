@@ -72,7 +72,7 @@ export function Header({ wallet, onOpen }: Props) {
                     rel="noopener noreferrer"
                     className="focus-ring mt-3 flex items-center gap-1 font-mono text-xs text-peri-deep hover:underline"
                   >
-                    View contract <ExternalLink size={12} />
+                    Registry contract <ExternalLink size={12} />
                   </a>
                   <button
                     type="button"

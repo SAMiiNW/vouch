@@ -45,7 +45,7 @@ export function Footer() {
               rel="noopener noreferrer"
               className="flex items-center gap-1 text-ink-soft hover:text-peri-deep"
             >
-              Draw test GEN <ExternalLink size={11} />
+              Get test GEN to attest <ExternalLink size={11} />
             </a>
             <a
               href="https://docs.genlayer.com"
@@ -61,15 +61,15 @@ export function Footer() {
               rel="noopener noreferrer"
               className="flex items-center gap-1 text-ink-soft hover:text-peri-deep"
             >
-              Inspect on explorer <ExternalLink size={11} />
+              View on explorer <ExternalLink size={11} />
             </a>
           </div>
         </div>
 
         <p className="mt-5 text-center font-mono text-[11px] text-ink-faint">
-          Vouch runs on GenLayer's Bradbury testnet. Every ruling is an AI read of peer evidence that
-          each validator re-runs to consensus, never a background check, never financial advice, and
-          it holds no stake or custody.
+          Vouch runs on the GenLayer Bradbury testnet. A credibility score is the agreement of
+          independent validators weighing peer attestations, not a background check or financial
+          advice, and your wallet signs every vouch. No stake is ever held.
         </p>
       </div>
     </footer>

@@ -243,7 +243,7 @@ export function Sidebar({ wallet, onOpen, derived, vouchTotal, loading }: Props)
               rel="noopener noreferrer"
               className="focus-ring flex items-center gap-1 text-ink-soft hover:text-peri-deep"
             >
-              Draw test GEN <ExternalLink size={11} />
+              Get test GEN to attest <ExternalLink size={11} />
             </a>
             <a
               href={EXPLORER}
@@ -251,7 +251,7 @@ export function Sidebar({ wallet, onOpen, derived, vouchTotal, loading }: Props)
               rel="noopener noreferrer"
               className="focus-ring flex items-center gap-1 text-ink-soft hover:text-peri-deep"
             >
-              Inspect on explorer <ExternalLink size={11} />
+              View on explorer <ExternalLink size={11} />
             </a>
             <a
               href="https://docs.genlayer.com"

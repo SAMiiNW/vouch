@@ -64,7 +64,7 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry: () 
           rel="noopener noreferrer"
           className="neu-sm focus-ring flex items-center gap-2 rounded-pill px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-ink-soft hover:text-ink"
         >
-          Explorer <ExternalLink size={13} />
+          View on explorer <ExternalLink size={13} />
         </a>
       </div>
     </div>
