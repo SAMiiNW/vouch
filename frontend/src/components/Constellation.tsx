@@ -2,13 +2,15 @@
 
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { PenLine } from 'lucide-react';
+import { PenLine, ExternalLink } from 'lucide-react';
 import { AssessorCore } from './AssessorCore';
 import { ProfileNode } from './ProfileNode';
 import { FilterLens, type FilterKey } from './FilterLens';
 import { SignalFeed } from './SignalFeed';
 import { SystemPorts } from './SystemPorts';
+import { TrustLattice } from './TrustLattice';
 import { FieldSkeleton, FieldEmpty, FieldError } from './FieldStates';
+import { EXPLORER } from '@/lib/contract';
 import type { Profile, Attestation } from '@/lib/contract';
 
 export type { FilterKey };
@@ -35,6 +37,7 @@ interface Props {
   onOpen: () => void;
   onVouch: (p: Profile) => void;
   onRetry: () => void;
+  connected: boolean;
 }
 
 // Core anchor (percentage of the field), deliberately offset left-of-center.
@@ -43,7 +46,8 @@ const CORE = { x: 39, y: 47 };
 const SAT = {
   intro: { x: 17, y: 13 },
   feed: { x: 83, y: 79 },
-  ports: { x: 18, y: 85 },
+  ports: { x: 15, y: 84 },
+  lattice: { x: 62, y: 90 },
 };
 
 const GOLDEN = 2.39996323; // golden angle in radians
@@ -90,6 +94,7 @@ export function Constellation({
   onOpen,
   onVouch,
   onRetry,
+  connected,
 }: Props) {
   const sorted = useMemo(() => [...profiles].sort((a, b) => b.index - a.index), [profiles]);
   const filtered = useMemo(() => {
@@ -250,6 +255,35 @@ export function Constellation({
         >
           <SystemPorts />
         </div>
+
+        {/* trust lattice: Vouch's signature live legend, wired to the core */}
+        <div
+          id="trust-lattice"
+          className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
+          style={{ left: `${SAT.lattice.x}%`, top: `${SAT.lattice.y}%` }}
+        >
+          <TrustLattice derived={derived} connected={connected} />
+        </div>
+
+        {/* explorer + docs: small separate markers, deliberately apart */}
+        <a
+          href={EXPLORER}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="neu-sm focus-ring absolute flex items-center gap-1.5 rounded-pill px-3.5 py-2 font-mono text-[11px] text-ink-soft transition-colors hover:text-peri-deep"
+          style={{ left: '4%', top: '52%' }}
+        >
+          View on explorer <ExternalLink size={11} />
+        </a>
+        <a
+          href="https://docs.genlayer.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="neu-sm focus-ring absolute flex items-center gap-1.5 rounded-pill px-3.5 py-2 font-mono text-[11px] text-ink-soft transition-colors hover:text-peri-deep"
+          style={{ right: '4%', top: '88%' }}
+        >
+          GenLayer docs <ExternalLink size={11} />
+        </a>
       </div>
 
       {/* ===== small-screen reflow: stacked soft column, no cords ===== */}
@@ -313,6 +347,27 @@ export function Constellation({
         )}
         <div className="flex justify-center">
           <SystemPorts />
+        </div>
+        <div className="flex justify-center">
+          <TrustLattice derived={derived} connected={connected} />
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <a
+            href={EXPLORER}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="neu-sm focus-ring flex items-center gap-1.5 rounded-pill px-3.5 py-2 font-mono text-[11px] text-ink-soft hover:text-peri-deep"
+          >
+            View on explorer <ExternalLink size={11} />
+          </a>
+          <a
+            href="https://docs.genlayer.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="neu-sm focus-ring flex items-center gap-1.5 rounded-pill px-3.5 py-2 font-mono text-[11px] text-ink-soft hover:text-peri-deep"
+          >
+            GenLayer docs <ExternalLink size={11} />
+          </a>
         </div>
       </div>
     </div>

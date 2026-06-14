@@ -11,9 +11,11 @@ import {
   Wallet,
   LogOut,
   ChevronRight,
+  Droplet,
 } from 'lucide-react';
 import { CopyButton } from './CopyButton';
 import { shortAddr } from '@/lib/format';
+import { FAUCET } from '@/lib/contract';
 import type { WalletState } from '@/hooks/useWallet';
 
 interface Props {
@@ -78,17 +80,87 @@ export function Rail({ wallet, onOpen }: Props) {
       {/* the rail spine */}
       <div className="well absolute inset-y-4 left-1/2 -z-10 w-[60px] -translate-x-1/2 rounded-pill" />
 
-      {/* brand + status */}
-      <div className="flex flex-col items-center gap-2">
+      {/* brand + the primary wallet control, docked at the very top */}
+      <div className="flex flex-col items-center gap-3">
         <span className="neu flex h-12 w-12 items-center justify-center rounded-2xl">
           <ShieldCheck size={22} className="text-peri-deep" />
         </span>
-        <span
-          title={connected && wallet.chainOk ? 'Bradbury, connected' : 'Bradbury'}
-          className={`h-2 w-2 rounded-full ${
-            connected && wallet.chainOk ? 'accent-grad' : 'bg-ink-faint'
-          }`}
-        />
+
+        {/* wallet connect: first interactive control, accent-filled and labelled */}
+        <div className="relative flex flex-col items-center">
+          {!connected ? (
+            <button
+              type="button"
+              onClick={wallet.connect}
+              disabled={wallet.connecting}
+              className="group relative flex flex-col items-center gap-1 focus-ring rounded-2xl disabled:opacity-70"
+              aria-label="Connect wallet"
+            >
+              <span className="accent-grad flex h-12 w-12 items-center justify-center rounded-2xl shadow-glow transition-transform group-hover:-translate-y-0.5">
+                <Wallet size={18} className="text-white" />
+              </span>
+              <span className="font-mono text-[9px] font-bold uppercase tracking-wider accent-text">
+                {wallet.connecting ? 'Wait' : 'Connect'}
+              </span>
+              <span className="pointer-events-none absolute left-14 top-1 z-30 hidden whitespace-nowrap rounded-pill bg-base px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-ink shadow-raised-sm group-hover:block">
+                {wallet.connecting ? 'Connecting' : 'Connect wallet'}
+              </span>
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => setOrbMenu((v) => !v)}
+                className="relative flex flex-col items-center gap-1"
+                aria-label="Wallet menu"
+              >
+                <span className="neu flex h-12 w-12 items-center justify-center rounded-2xl">
+                  <span className="h-3 w-3 rounded-full accent-grad" />
+                </span>
+                <span className="font-mono text-[9px] font-bold uppercase tracking-wider text-ink-soft">
+                  {shortAddr(wallet.address ?? '').slice(0, 6)}
+                </span>
+                <ChevronRight
+                  size={12}
+                  className={`absolute right-1 top-3 text-ink-faint transition-transform ${orbMenu ? 'rotate-90' : ''}`}
+                />
+              </button>
+              {orbMenu && (
+                <div className="neu absolute left-16 top-0 z-30 w-64 rounded-soft p-4">
+                  <p className="uplabel text-ink-faint">Connected wallet</p>
+                  <div className="mt-2 flex items-center justify-between gap-2 break-all font-mono text-[11px] text-ink-soft">
+                    <span>{wallet.address}</span>
+                    <CopyButton value={wallet.address ?? ''} label="Copy address" />
+                  </div>
+                  <p className="mt-2 font-mono text-[11px] text-ink-faint">
+                    {shortAddr(wallet.address ?? '')}
+                  </p>
+                  {!wallet.chainOk && (
+                    <p className="mt-3 rounded-xl bg-mixed/10 px-3 py-2 font-mono text-[11px] text-mixed">
+                      Wrong network. Switch to Bradbury (4221).
+                    </p>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      wallet.disconnect();
+                      setOrbMenu(false);
+                    }}
+                    className="well focus-ring mt-3 flex w-full items-center justify-center gap-2 rounded-pill py-2.5 font-mono text-[11px] uppercase tracking-wider text-ink-soft transition-colors hover:text-unverified"
+                  >
+                    <LogOut size={13} /> Disconnect
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+          <span
+            title={connected && wallet.chainOk ? 'Bradbury, connected' : 'Bradbury'}
+            className={`mt-2 h-2 w-2 rounded-full ${
+              connected && wallet.chainOk ? 'accent-grad' : 'bg-ink-faint'
+            }`}
+          />
+        </div>
       </div>
 
       {/* primary actions + jumps */}
@@ -100,69 +172,21 @@ export function Rail({ wallet, onOpen }: Props) {
         ))}
       </div>
 
-      {/* wallet orb */}
-      <div className="relative flex flex-col items-center">
-        {!connected ? (
-          <button
-            type="button"
-            onClick={wallet.connect}
-            disabled={wallet.connecting}
-            className="group relative flex h-12 w-12 items-center justify-center"
-            aria-label="Connect wallet"
-          >
-            <span className="rail-pill flex h-12 w-12 items-center justify-center rounded-2xl transition-transform group-hover:-translate-y-0.5">
-              <Wallet size={18} className="text-peri-deep" />
-            </span>
-            <span className="pointer-events-none absolute left-14 z-30 hidden whitespace-nowrap rounded-pill bg-base px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-ink shadow-raised-sm group-hover:block">
-              {wallet.connecting ? 'Connecting' : 'Connect wallet'}
-            </span>
-          </button>
-        ) : (
-          <>
-            <button
-              type="button"
-              onClick={() => setOrbMenu((v) => !v)}
-              className="relative flex h-12 w-12 items-center justify-center"
-              aria-label="Wallet menu"
-            >
-              <span className="neu flex h-12 w-12 items-center justify-center rounded-2xl">
-                <span className="h-3 w-3 rounded-full accent-grad" />
-              </span>
-              <ChevronRight
-                size={12}
-                className={`absolute -right-0.5 top-1 text-ink-faint transition-transform ${orbMenu ? 'rotate-90' : ''}`}
-              />
-            </button>
-            {orbMenu && (
-              <div className="neu absolute bottom-0 left-16 z-30 w-64 rounded-soft p-4">
-                <p className="uplabel text-ink-faint">Connected wallet</p>
-                <div className="mt-2 flex items-center justify-between gap-2 break-all font-mono text-[11px] text-ink-soft">
-                  <span>{wallet.address}</span>
-                  <CopyButton value={wallet.address ?? ''} label="Copy address" />
-                </div>
-                <p className="mt-2 font-mono text-[11px] text-ink-faint">
-                  {shortAddr(wallet.address ?? '')}
-                </p>
-                {!wallet.chainOk && (
-                  <p className="mt-3 rounded-xl bg-mixed/10 px-3 py-2 font-mono text-[11px] text-mixed">
-                    Wrong network. Switch to Bradbury (4221).
-                  </p>
-                )}
-                <button
-                  type="button"
-                  onClick={() => {
-                    wallet.disconnect();
-                    setOrbMenu(false);
-                  }}
-                  className="well focus-ring mt-3 flex w-full items-center justify-center gap-2 rounded-pill py-2.5 font-mono text-[11px] uppercase tracking-wider text-ink-soft transition-colors hover:text-unverified"
-                >
-                  <LogOut size={13} /> Disconnect
-                </button>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+      {/* rail foot: faucet, relocated out of the system-ports cluster */}
+      <a
+        href={FAUCET}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group relative flex h-12 w-12 items-center justify-center"
+        aria-label="Get test GEN to attest"
+      >
+        <span className="rail-pill flex h-12 w-12 items-center justify-center rounded-2xl transition-transform group-hover:-translate-y-0.5">
+          <Droplet size={18} className="text-peri-deep" />
+        </span>
+        <span className="pointer-events-none absolute left-14 z-30 hidden whitespace-nowrap rounded-pill bg-base px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-ink shadow-raised-sm group-hover:block">
+          Get test GEN
+        </span>
+      </a>
     </motion.nav>
   );
 }

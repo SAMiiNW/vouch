@@ -54,6 +54,7 @@ function Desktop() {
             onOpen={openDraft}
             onVouch={openVouch}
             onRetry={() => data.refresh()}
+            connected={!!wallet.address}
           />
         </div>
       </div>

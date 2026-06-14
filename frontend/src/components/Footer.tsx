@@ -65,12 +65,6 @@ export function Footer() {
             </a>
           </div>
         </div>
-
-        <p className="mt-5 text-center font-mono text-[11px] text-ink-faint">
-          Vouch runs on the GenLayer Bradbury testnet. A credibility score is the agreement of
-          independent validators weighing peer attestations, not a background check or financial
-          advice, and your wallet signs every vouch. No stake is ever held.
-        </p>
       </div>
     </footer>
   );
