@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #eef0f4;
+}
+
+@layer base {
+  ::selection {
+    background: #7c83ff;
+    color: #ffffff;
+  }
+}
+
+@layer components {
+  /* raised extruded surface */
+  .neu {
+    background: #eef0f4;
+    box-shadow: 8px 8px 18px rgba(180, 187, 204, 0.7), -8px -8px 18px rgba(255, 255, 255, 0.95);
+  }
+  .neu-sm {
+    background: #eef0f4;
+    box-shadow: 5px 5px 11px rgba(180, 187, 204, 0.6), -5px -5px 11px rgba(255, 255, 255, 0.9);
+  }
+  /* inset well */
+  .well {
+    background: #e9ebf1;
+    box-shadow: inset 5px 5px 11px rgba(180, 187, 204, 0.7), inset -5px -5px 11px rgba(255, 255, 255, 0.95);
+  }
+  .well-input {
+    background: #e9ebf1;
+    box-shadow: inset 4px 4px 9px rgba(180, 187, 204, 0.7), inset -4px -4px 9px rgba(255, 255, 255, 0.95);
+  }
+}
+
+@layer utilities {
+  .uplabel {
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.68rem;
+    font-weight: 700;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .focus-ring:focus-visible {
+    outline: 2px solid #7c83ff;
+    outline-offset: 3px;
+  }
+  .accent-grad {
+    background-image: linear-gradient(120deg, #7c83ff 0%, #54d6b4 100%);
+  }
+  .accent-text {
+    background-image: linear-gradient(120deg, #5a62e6 0%, #36b89a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: #eef0f4;
+}
+::-webkit-scrollbar-thumb {
+  background: #d3d8e2;
+  border: 3px solid #eef0f4;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #7c83ff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
