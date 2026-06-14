@@ -68,8 +68,9 @@ function Dashboard() {
           )}
 
           <p className="mt-8 px-1 font-mono text-[11px] leading-relaxed text-ink-faint">
-            Built on GenLayer Bradbury Testnet. A vouch is an AI ruling under validator consensus,
-            not a background check or financial advice.
+            Vouch runs on GenLayer's Bradbury testnet. Every ruling is an AI read of peer evidence
+            that each validator re-runs to consensus, never a background check, never financial
+            advice, and it holds no stake or custody.
           </p>
         </main>
       </div>

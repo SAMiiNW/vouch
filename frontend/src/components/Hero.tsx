@@ -80,14 +80,14 @@ export function Hero({ onOpen, stats }: Props) {
             className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-xs text-ink-faint"
           >
             <span className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full accent-grad" /> Live on Bradbury
+              <span className="h-2 w-2 rounded-full accent-grad" /> Ledger live on Bradbury
             </span>
             <span className="flex items-center gap-2">
               {shortAddr(CONTRACT_ADDRESS)}
               <CopyButton value={CONTRACT_ADDRESS} label="Copy contract address" />
             </span>
             <a href={FAUCET} target="_blank" rel="noopener noreferrer" className="focus-ring text-peri-deep hover:underline">
-              Claim test GEN
+              Draw test GEN to vouch
             </a>
             <a
               href={`${EXPLORER}/address/${CONTRACT_ADDRESS}`}
@@ -95,7 +95,7 @@ export function Hero({ onOpen, stats }: Props) {
               rel="noopener noreferrer"
               className="focus-ring hover:text-ink"
             >
-              Explorer
+              Inspect on explorer
             </a>
           </motion.div>
         </div>

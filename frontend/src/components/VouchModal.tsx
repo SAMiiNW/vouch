@@ -345,7 +345,7 @@ export function VouchModal({
                 <p className="mt-2 max-w-sm font-body text-sm text-ink-soft">{state.error}</p>
                 {/fee reserve|LackOfFundForMaxFee/i.test(state.error ?? '') && (
                   <a href={FAUCET} target="_blank" rel="noopener noreferrer" className="mt-3 font-mono text-xs text-peri-deep hover:underline">
-                    Claim test GEN
+                    Draw test GEN to vouch
                   </a>
                 )}
                 <div className="mt-6 flex gap-3">

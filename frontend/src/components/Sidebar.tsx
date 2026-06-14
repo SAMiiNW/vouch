@@ -232,7 +232,7 @@ export function Sidebar({ wallet, onOpen, derived, vouchTotal, loading }: Props)
               rel="noopener noreferrer"
               className="focus-ring hover:text-peri-deep"
             >
-              Contract {shortAddr(CONTRACT_ADDRESS)}
+              Registry contract {shortAddr(CONTRACT_ADDRESS)}
             </a>
             <CopyButton value={CONTRACT_ADDRESS} label="Copy contract" />
           </div>
@@ -243,7 +243,7 @@ export function Sidebar({ wallet, onOpen, derived, vouchTotal, loading }: Props)
               rel="noopener noreferrer"
               className="focus-ring flex items-center gap-1 text-ink-soft hover:text-peri-deep"
             >
-              Faucet <ExternalLink size={11} />
+              Draw test GEN <ExternalLink size={11} />
             </a>
             <a
               href={EXPLORER}
@@ -251,7 +251,7 @@ export function Sidebar({ wallet, onOpen, derived, vouchTotal, loading }: Props)
               rel="noopener noreferrer"
               className="focus-ring flex items-center gap-1 text-ink-soft hover:text-peri-deep"
             >
-              Explorer <ExternalLink size={11} />
+              Inspect on explorer <ExternalLink size={11} />
             </a>
             <a
               href="https://docs.genlayer.com"
@@ -259,7 +259,7 @@ export function Sidebar({ wallet, onOpen, derived, vouchTotal, loading }: Props)
               rel="noopener noreferrer"
               className="focus-ring flex items-center gap-1 text-ink-soft hover:text-peri-deep"
             >
-              Docs <ExternalLink size={11} />
+              GenLayer docs <ExternalLink size={11} />
             </a>
           </div>
         </div>
