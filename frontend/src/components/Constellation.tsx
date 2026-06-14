@@ -158,7 +158,7 @@ export function Constellation({
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="absolute w-[23rem] -translate-x-1/2 -translate-y-1/2"
+          className="absolute z-20 w-[23rem] -translate-x-1/2 -translate-y-1/2"
           style={{ left: `${SAT.intro.x}%`, top: `${SAT.intro.y}%` }}
         >
           <div className="neu rounded-[1.8rem] p-6">
@@ -184,7 +184,7 @@ export function Constellation({
 
         {/* filter lens (top-right, vertical) */}
         <div
-          className="absolute -translate-y-1/2"
+          className="absolute z-20 -translate-y-1/2"
           style={{ right: '3%', top: '20%' }}
         >
           <FilterLens filter={filter} onFilter={onFilter} derived={derived} />
@@ -240,7 +240,7 @@ export function Constellation({
         {!loading && !error && attestations.length > 0 && (
           <div
             id="signal-feed"
-            className="absolute -translate-x-1/2 -translate-y-1/2"
+            className="absolute z-20 -translate-x-1/2 -translate-y-1/2"
             style={{ left: `${SAT.feed.x}%`, top: `${SAT.feed.y}%` }}
           >
             <SignalFeed items={attestations} />
@@ -250,7 +250,7 @@ export function Constellation({
         {/* system ports (lower-left) */}
         <div
           id="system-ports"
-          className="absolute -translate-x-1/2 -translate-y-1/2"
+          className="absolute z-20 -translate-x-1/2 -translate-y-1/2"
           style={{ left: `${SAT.ports.x}%`, top: `${SAT.ports.y}%` }}
         >
           <SystemPorts />
